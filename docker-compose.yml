@@ -1,0 +1,46 @@
+version: '3.7'
+services:
+    maria:
+        image: mariadb
+        volumes:
+            - "./db:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: 'passwd'
+            MYSQL_DATABASE: 'symfony_db'
+        ports:
+            - '3306:3306'
+        networks:
+            symfony:
+                ipv4_address: 10.5.0.101
+
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www/symfony
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - 8000:80
+        networks:
+            symfony:
+                ipv4_address: 10.5.0.102
+    php:
+        build:
+            context: ./docker/php
+        environment:
+            APP_ENV: dev
+            DATABASE_URL: 'mysql://root:passwd@10.5.0.101:3306/symfony_db?serverVersion=mariadb-10.4.11'
+            CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$$'
+        volumes:
+            - ./:/var/www/symfony
+        networks:
+            symfony:
+                ipv4_address: 10.5.0.103
+        links:
+            - maria
+        ports:
+            - '9000:9000'
+
+networks:
+    symfony:
+        external:
+            name: symfony

@@ -1,0 +1,10 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Symfony User API
+            description: API for users in symfony_db
+            version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/users(?!/doc$) # Accepts routes under /users except /api/doc
+            - ^/user(?!/doc$) # Accepts routes under /user except /api/doc
